@@ -6,4 +6,4 @@ El desarrollo se realiza en OS Windows. Es necesario instalar Flutter junto a su
 ```PS
 flutter doctor
 ```
-Es muy probable que se solicite Android Studio en conjunto con su SDK ("Software Development Kit", o kit de desarrollo de software), los cuales se pueden conseguir desde su [página oficial](software development kit](https://developer.android.com/studio?hl=es-419). Además de realizar una integración de Flutter con Visual Studio Code, el cual es opcional; se puede descargar e integrar desde las extensiones de VS Code.
+Es muy probable que se solicite Android Studio en conjunto con su SDK ("Software Development Kit", o kit de desarrollo de software), los cuales se pueden conseguir desde su [página oficial](https://developer.android.com/studio?hl=es-419). Además de realizar una integración de Flutter con Visual Studio Code, el cual es opcional; se puede descargar e integrar desde las extensiones de VS Code.
