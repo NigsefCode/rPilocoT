@@ -13,7 +13,14 @@ class AuthService {
   User? get currentUser => _currentUser;
 
   Future<String?> getToken() async {
-    return await storage.read(key: 'token');
+    try {
+      final token = await storage.read(key: 'token');
+      print('Token obtenido: ${token?.substring(0, 20)}...'); // Para debug
+      return token;
+    } catch (e) {
+      print('Error obteniendo token: $e');
+      return null;
+    }
   }
 
   Future<bool> register(String name, String email, String password) async {

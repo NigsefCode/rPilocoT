@@ -1,0 +1,21 @@
+[debug] [2024-11-15T13:07:10.326Z] ----------------------------------------------------------------------
+[debug] [2024-11-15T13:07:10.329Z] Command:       C:\Program Files\nodejs\node.exe C:\Program Files\nodejs\node_modules\firebase-tools\lib\bin\firebase.js init
+[debug] [2024-11-15T13:07:10.329Z] CLI Version:   13.25.0
+[debug] [2024-11-15T13:07:10.330Z] Platform:      win32
+[debug] [2024-11-15T13:07:10.330Z] Node Version:  v20.12.1
+[debug] [2024-11-15T13:07:10.330Z] Time:          Fri Nov 15 2024 10:07:10 GMT-0300 (hora de verano de Chile)
+[debug] [2024-11-15T13:07:10.330Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2024-11-15T13:07:10.335Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2024-11-15T13:07:10.336Z] > authorizing via signed-in user (nisepulvedafalconbioinformatic@gmail.com)
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  C:\Users\nicos\OneDrive\Escritorio\rPilocoT\rPilocoT\backend
+

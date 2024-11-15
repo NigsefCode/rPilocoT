@@ -5,13 +5,17 @@ const {
   getVehicle,
   createVehicle,
   updateVehicle,
-  deleteVehicle
+  deleteVehicle,
+  getDefaultVehicle  // Agregamos el nuevo método
 } = require('../controllers/vehicleController');
 
 const router = express.Router();
 
 // Todas las rutas requieren autenticación
 router.use(protect);
+
+// Ruta para obtener el vehículo por defecto (debe ir antes de /:id)
+router.get('/default', getDefaultVehicle);
 
 // Rutas para vehículos
 router.route('/')

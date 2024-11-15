@@ -45,5 +45,21 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<!-- Permisos de ubicación -->
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>Esta aplicación necesita acceso a la ubicación para mostrar tu posición en el mapa y calcular rutas.</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>Esta aplicación necesita acceso a la ubicación para mostrar tu posición en el mapa y calcular rutas.</string>
+    
+    <!-- Si necesitas ubicación en segundo plano -->
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>Esta aplicación necesita acceso a la ubicación para mostrar tu posición en el mapa y calcular rutas.</string>
+    
+    <!-- Permiso de internet -->
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <true/>
+    </dict>
 </dict>
 </plist>

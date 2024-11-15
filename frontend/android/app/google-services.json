@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "756565377270",
+    "project_id": "myroute-ap",
+    "storage_bucket": "myroute-ap.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:756565377270:android:69557c05e2514a798e6cd7",
+        "android_client_info": {
+          "package_name": "com.example.frontend"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDBXE-21I83kqmne8aGH5ncehNy0nIVeTQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

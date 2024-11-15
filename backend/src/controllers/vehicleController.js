@@ -11,6 +11,22 @@ exports.getUserVehicles = async (req, res) => {
   }
 };
 
+// Obtener el vehículo por defecto del usuario
+exports.getDefaultVehicle = async (req, res) => {
+  try {
+    const vehicle = await Vehicle.findOne({ userId: req.user.id }).sort({ createdAt: -1 });
+    
+    if (!vehicle) {
+      return res.status(404).json({ message: 'No vehicles found for this user' });
+    }
+    
+    res.json(vehicle);
+  } catch (error) {
+    console.error('Error getting default vehicle:', error);
+    res.status(500).json({ message: 'Error getting default vehicle', error: error.message });
+  }
+};
+
 // Obtener un vehículo específico
 exports.getVehicle = async (req, res) => {
   try {
