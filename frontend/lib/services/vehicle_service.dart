@@ -4,8 +4,8 @@ import '../models/vehicle.dart';
 import 'auth_service.dart';
 
 class VehicleService {
-  //final String baseUrl = 'http://10.0.2.2:5000/api/vehicles';
-  final String baseUrl = 'http://localhost:5000/api/vehicles';
+  final String baseUrl = 'http://10.0.2.2:5000/api/vehicles';
+  //final String baseUrl = 'http://localhost:5000/api/vehicles';
   final AuthService _authService = AuthService();
 
   Future<Map<String, String>> _getAuthHeaders() async {

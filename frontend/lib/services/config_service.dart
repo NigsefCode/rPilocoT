@@ -3,7 +3,8 @@ import 'dart:convert';
 import '../services/auth_service.dart';
 
 class ConfigService {
-  static const String baseUrl = 'http://localhost:5000/api';
+  static const String baseUrl = 'http://10.0.2.2:5000/api';
+  //static const String baseUrl = 'http://localhost:5000/api';
   static final AuthService _authService = AuthService();
 
   static Future<String> getGoogleMapsApiKey() async {

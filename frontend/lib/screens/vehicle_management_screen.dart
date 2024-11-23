@@ -132,7 +132,7 @@ class _VehicleManagementScreenState extends State<VehicleManagementScreen> {
                       CircleAvatar(
                         radius: 40,
                         backgroundColor: Theme.of(context).colorScheme.primary,
-                        child: Icon(
+                        child: const Icon(
                           Icons.directions_car,
                           size: 40,
                           color: Colors.white,

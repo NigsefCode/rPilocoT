@@ -5,7 +5,8 @@ import '../models/route.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class RouteService {
-  static const String baseUrl = 'http://localhost:5000/api/routes';
+  static const String baseUrl = 'http://10.0.2.2:5000/api/routes';
+  //static const String baseUrl = 'http://localhost:5000/api/routes';
   final String? token;
 
   RouteService({required this.token}) {

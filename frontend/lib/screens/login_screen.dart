@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -15,27 +16,50 @@ class _LoginScreenState extends State<LoginScreen> {
   String _password = '';
   bool _isLoading = false;
   bool _isPasswordVisible = false;
+  bool _isHovering = false;
 
+  Future<void> signInWithGoogle() async {
+    try {
+      print('Iniciando sesión con Google...');
+      final user = await _authService.signInWithGoogle();
+      if (user != null) {
+        print('Inicio de sesión con Google exitoso. Usuario: ${user.email}');
+        // Navegar a la pantalla principal
+        Navigator.pushReplacementNamed(context, '/main');
+      } else {
+        print('No se pudo iniciar sesión con Google. El usuario es nulo.');
+        _showErrorSnackBar('No se pudo iniciar sesión con Google.');
+      }
+    } catch (e) {
+      print("Error en Google Sign-In: $e");
+      _showErrorSnackBar("Error al iniciar sesión con Google");
+    }
+  }
+  
   void _submit() async {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
       _formKey.currentState!.save();
+      print('Intentando iniciar sesión con correo: $_email');
 
       try {
         bool success = await _authService.login(_email, _password);
         if (success) {
+          print('Inicio de sesión exitoso. Navegando a la pantalla principal...');
           Navigator.pushReplacementNamed(context, '/main');
         } else {
-          _showErrorSnackBar(
-              'Error al iniciar sesión. Verificar credenciales.');
+          print('Error en el inicio de sesión. Credenciales inválidas.');
+          _showErrorSnackBar('Error al iniciar sesión. Verificar credenciales.');
         }
       } catch (e) {
+        print('Error en el inicio de sesión: $e');
         _showErrorSnackBar(e.toString());
       } finally {
         setState(() => _isLoading = false);
       }
     }
   }
+
 
   void _showErrorSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -52,7 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: Stack(
         children: [
           // Fondo con gradiente
@@ -236,6 +260,51 @@ class _LoginScreenState extends State<LoginScreen> {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
+                      ),
+
+                      // Botón de Google personalizado
+                      MouseRegion(
+                        onEnter: (_) {
+                          setState(() {
+                            _isHovering = true;
+                          });
+                        },
+                        onExit: (_) {
+                          setState(() {
+                            _isHovering = false;
+                          });
+                        },
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            minimumSize: const Size(double.infinity, 56),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            elevation: _isHovering ? 10 : 5, // Cambiar la elevación al hacer hover
+                            backgroundColor: _isHovering ? Colors.grey.shade200 : Colors.white, // Cambiar color al hacer hover
+                            side: BorderSide(color: Colors.grey.shade300, width: 1),
+                          ),
+                          onPressed: signInWithGoogle,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                'assets/images/google_logo.png',
+                                height: 24,
+                                width: 24,
+                              ),
+                              const SizedBox(width: 12),
+                              const Text(
+                                'Iniciar sesión con Google',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
 
                       const SizedBox(height: 24),

@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const { generateToken } = require('../utils/tokenManager');
+const userService = require('../services/userService');
 
 // Registro de usuario
 exports.register = async (req, res) => {
@@ -39,6 +40,38 @@ exports.register = async (req, res) => {
     res.status(500).json({ message: 'Error en el servidor', error: error.message });
   }
 };
+
+// Registro de usuario con Google
+exports.registerGoogle = async (req, res) => {
+  try {
+    const { name, email } = req.body;
+
+    console.log('Datos recibidos para registrar usuario de Google:', { name, email });
+
+    // Registrar o actualizar el usuario utilizando el servicio
+    const user = await userService.registerGoogleUser(name, email);
+    console.log('Usuario encontrado/registrado:', user);
+
+    // Generar un token JWT
+    const token = generateToken(user._id);
+
+    // Enviar la respuesta con el token y el usuario
+    res.status(201).json({
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        hasCompletedQuestionnaire: user.hasCompletedQuestionnaire,
+      },
+      token,
+    });
+  } catch (error) {
+    console.error('Error registrando usuario de Google:', error);
+    res.status(500).json({ message: 'Error al registrar usuario de Google', error: error.message });
+  }
+};
+
 
 // Login de usuario
 exports.login = async (req, res) => {

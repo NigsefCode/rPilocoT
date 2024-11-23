@@ -6,26 +6,29 @@ import 'screens/vehicle_questionnaire_screen.dart';
 import 'theme/theme.dart'; // Importa el archivo de tema
 import 'firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
-import './services/firebase_service.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await _initializeFirebaseSafely();
+  runApp(const MyApp());
+}
 
-  // Prueba de autenticación anónima
+Future<void> _initializeFirebaseSafely() async {
   try {
-    final userCredential = await FirebaseAuth.instance.signInAnonymously();
-    print("Usuario anónimo ID: ${userCredential.user?.uid}");
-    String? token = await userCredential.user?.getIdToken();
-    print("Token: $token");
+    print('Iniciando Firebase...'); // Log para verificar que se inicia la inicialización
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    print('Firebase inicializado correctamente.'); // Log para confirmar la inicialización exitosa
   } catch (e) {
-    print("Error de autenticación: $e");
+    // Si ya existe una instancia, capturamos el error y lo ignoramos
+    if (e.toString().contains('A Firebase App named "[DEFAULT]" already exists')) {
+      print('Firebase ya está inicializado, no se requiere inicializar nuevamente.');
+    } else {
+      print('Error al inicializar Firebase: $e'); // Log de error para cualquier otro problema
+      rethrow;
+    }
   }
-
-  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -33,28 +36,28 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<String?>(
-      future: FirebaseService.getFirebaseToken(),
-      builder: (context, snapshot) {
-        print('Firebase Token: ${snapshot.data}'); // Para depuración
-        if (snapshot.hasData) {
-          print('Token obtenido: ${snapshot.data}');
-        } else if (snapshot.hasError) {
-          print('Error: ${snapshot.error}');
-        }
-
-        return MaterialApp(
-          title: 'rPilocoT',
-          theme: AppTheme.darkTheme,
-          initialRoute: '/login',
-          routes: {
-            '/login': (context) => const LoginScreen(),
-            '/register': (context) => RegisterScreen(),
-            '/main': (context) => MainScreen(),
-            '/vehicle-questionnaire': (context) =>
-                const VehicleQuestionnaireScreen(),
-          },
-        );
+    print('Construyendo MyApp widget...'); // Log para confirmar que MyApp se está construyendo
+    return MaterialApp(
+      title: 'rPilocoT',
+      theme: AppTheme.darkTheme,
+      initialRoute: '/login',
+      routes: {
+        '/login': (context) {
+          print('Navegando a la pantalla de login...'); // Log para verificar la navegación
+          return const LoginScreen();
+        },
+        '/register': (context) {
+          print('Navegando a la pantalla de registro...'); // Log para verificar la navegación
+          return const RegisterScreen();
+        },
+        '/main': (context) {
+          print('Navegando a la pantalla principal...'); // Log para verificar la navegación
+          return const MainScreen();
+        },
+        '/vehicle-questionnaire': (context) {
+          print('Navegando a la pantalla del cuestionario del vehículo...'); // Log para verificar la navegación
+          return const VehicleQuestionnaireScreen();
+        },
       },
     );
   }

@@ -1,21 +1,31 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth; // Alias para Firebase Auth
+import 'package:google_sign_in/google_sign_in.dart';
 import '../models/user.dart';
 
 class AuthService {
-  //final String baseUrl = 'http://10.0.2.2:5000/api/auth';
-  final String baseUrl = 'http://localhost:5000/api/auth';
-  final storage = FlutterSecureStorage();
+  final String baseUrl = 'http://10.0.2.2:5000/api/auth';
+  //final String baseUrl = 'http://localhost:5000/api/auth';
+  final storage = const FlutterSecureStorage();
   User? _currentUser;
+
+  // Instancia de GoogleSignIn
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   // Getter para el usuario actual
   User? get currentUser => _currentUser;
 
   Future<String?> getToken() async {
     try {
+      print('Obteniendo token del almacenamiento seguro...');
       final token = await storage.read(key: 'token');
-      print('Token obtenido: ${token?.substring(0, 20)}...'); // Para debug
+      if (token != null) {
+        print('Token obtenido: ${token.substring(0, 20)}...');
+      } else {
+        print('No se encontró token almacenado.');
+      }
       return token;
     } catch (e) {
       print('Error obteniendo token: $e');
@@ -80,6 +90,86 @@ class AuthService {
     }
   }
 
+  Future<bool> registerGoogleUser(String name, String email) async {
+    try {
+      print('Intentando registrar el usuario de Google: $name ($email)');
+      final response = await http.post(
+        Uri.parse('$baseUrl/register-google'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'name': name,
+          'email': email,
+        }),
+      );
+
+      print('Respuesta del servidor para registro de Google: ${response.statusCode}');
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        
+        // Guardar token en el almacenamiento seguro si es necesario
+        if (responseData['token'] != null) {
+          await storage.write(key: 'token', value: responseData['token']);
+        }
+
+        // Crear instancia de User con los datos recibidos
+        _currentUser = User.fromJson(responseData['user']);
+        return true;
+      }
+
+      print('Error al registrar el usuario de Google. Código de respuesta: ${response.statusCode}');
+      return false;
+    } catch (e) {
+      print('Google registration error: $e');
+      return false;
+    }
+  }
+
+
+  Future<firebase_auth.User?> signInWithGoogle() async {
+    try {
+      print('Iniciando el flujo de autenticación con Google...');
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) {
+        print('El usuario canceló el inicio de sesión de Google.');
+        return null;
+      }
+
+      print('Usuario de Google encontrado: ${googleUser.email}');
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      print('Autenticación de Google completada. Accediendo a credenciales...');
+
+      final firebase_auth.AuthCredential credential = firebase_auth.GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      print('Iniciando sesión con Firebase usando credenciales de Google...');
+      final firebase_auth.UserCredential userCredential =
+          await firebase_auth.FirebaseAuth.instance.signInWithCredential(credential);
+
+      print('Inicio de sesión con Firebase completado.');
+      String? displayName = userCredential.user?.displayName;
+      String? email = userCredential.user?.email;
+
+      if (displayName != null && email != null) {
+        print('Registrando usuario de Google en la base de datos: $displayName ($email)');
+        final success = await registerGoogleUser(displayName, email);
+        if (success) {
+          _currentUser = User(name: displayName, email: email);
+          print('Usuario registrado exitosamente.');
+        } else {
+          print('No se pudo registrar el usuario en la base de datos.');
+        }
+      }
+
+      return userCredential.user;
+    } catch (e) {
+      print('Error en Google Sign-In: $e');
+      return null;
+    }
+  }
+
+
   Future<User?> getCurrentUser() async {
     try {
       final token = await storage.read(key: 'token');
@@ -105,9 +195,22 @@ class AuthService {
     }
   }
 
+  // Logout para ambos tipos de usuario (tradicional y Google)
   Future<void> logout() async {
-    await storage.delete(key: 'token');
-    _currentUser = null;
+    try {
+      // Eliminar el token almacenado localmente
+      await storage.delete(key: 'token');
+
+      // Desconectar al usuario de Google si está logueado con Google
+      if (await _googleSignIn.isSignedIn()) {
+        await _googleSignIn.signOut();
+      }
+
+      // También cerrar sesión de Firebase
+      await firebase_auth.FirebaseAuth.instance.signOut(); // Uso del alias 'firebase_auth' para cerrar sesión de Firebase
+    } catch (e) {
+      print('Error cerrando sesión: $e');
+    }
   }
 
   Future<bool> updateQuestionnaireStatus() async {

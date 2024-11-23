@@ -27,9 +27,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _showChangeNameDialog() {
-    final _formKey = GlobalKey<FormState>();
-    String _newName = _user?.name ?? '';
-    bool _isLoading = false;
+    final formKey = GlobalKey<FormState>();
+    String newName = _user?.name ?? '';
+    bool isLoading = false;
 
     showDialog(
       context: context,
@@ -38,7 +38,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         builder: (context, setState) => AlertDialog(
           title: const Text('Cambiar Nombre'),
           content: Form(
-            key: _formKey,
+            key: formKey,
             child: TextFormField(
               initialValue: _user?.name,
               decoration: const InputDecoration(
@@ -48,25 +48,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               validator: (value) =>
                   value?.isEmpty ?? true ? 'Ingrese un nombre válido' : null,
-              onSaved: (value) => _newName = value!,
+              onSaved: (value) => newName = value!,
             ),
           ),
           actions: [
             TextButton(
-              onPressed: _isLoading ? null : () => Navigator.pop(context),
+              onPressed: isLoading ? null : () => Navigator.pop(context),
               child: const Text('Cancelar'),
             ),
             ElevatedButton(
-              onPressed: _isLoading
+              onPressed: isLoading
                   ? null
                   : () async {
-                      if (_formKey.currentState?.validate() ?? false) {
-                        setState(() => _isLoading = true);
-                        _formKey.currentState?.save();
+                      if (formKey.currentState?.validate() ?? false) {
+                        setState(() => isLoading = true);
+                        formKey.currentState?.save();
 
                         try {
                           final success =
-                              await _authService.updateName(_newName);
+                              await _authService.updateName(newName);
                           if (success) {
                             await _loadUserProfile();
                             if (mounted) {
@@ -91,12 +91,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           }
                         } finally {
                           if (mounted) {
-                            setState(() => _isLoading = false);
+                            setState(() => isLoading = false);
                           }
                         }
                       }
                     },
-              child: _isLoading
+              child: isLoading
                   ? const SizedBox(
                       height: 20,
                       width: 20,
@@ -111,11 +111,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _showChangePasswordDialog() {
-    final _passwordFormKey = GlobalKey<FormState>();
-    String _currentPassword = '';
-    String _newPassword = '';
-    String _confirmPassword = '';
-    bool _isLoading = false;
+    final passwordFormKey = GlobalKey<FormState>();
+    String currentPassword = '';
+    String newPassword = '';
+    String confirmPassword = '';
+    bool isLoading = false;
 
     showDialog(
       context: context,
@@ -124,7 +124,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         builder: (context, setState) => AlertDialog(
           title: const Text('Cambiar Contraseña'),
           content: Form(
-            key: _passwordFormKey,
+            key: passwordFormKey,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -137,7 +137,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   validator: (value) => value?.isEmpty ?? true
                       ? 'Ingrese su contraseña actual'
                       : null,
-                  onSaved: (value) => _currentPassword = value!,
+                  onSaved: (value) => currentPassword = value!,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
@@ -146,7 +146,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     border: OutlineInputBorder(),
                   ),
                   obscureText: true,
-                  onChanged: (value) => _newPassword = value,
+                  onChanged: (value) => newPassword = value,
                   validator: (value) {
                     if (value?.isEmpty ?? true) {
                       return 'Ingrese la nueva contraseña';
@@ -168,33 +168,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     if (value?.isEmpty ?? true) {
                       return 'Confirme la nueva contraseña';
                     }
-                    if (value != _newPassword) {
+                    if (value != newPassword) {
                       return 'Las contraseñas no coinciden';
                     }
                     return null;
                   },
-                  onSaved: (value) => _confirmPassword = value!,
+                  onSaved: (value) => confirmPassword = value!,
                 ),
               ],
             ),
           ),
           actions: [
             TextButton(
-              onPressed: _isLoading ? null : () => Navigator.pop(context),
+              onPressed: isLoading ? null : () => Navigator.pop(context),
               child: const Text('Cancelar'),
             ),
             ElevatedButton(
-              onPressed: _isLoading
+              onPressed: isLoading
                   ? null
                   : () async {
-                      if (_passwordFormKey.currentState?.validate() ?? false) {
-                        setState(() => _isLoading = true);
-                        _passwordFormKey.currentState?.save();
+                      if (passwordFormKey.currentState?.validate() ?? false) {
+                        setState(() => isLoading = true);
+                        passwordFormKey.currentState?.save();
 
                         try {
                           await _authService.updatePassword(
-                            _currentPassword,
-                            _newPassword,
+                            currentPassword,
+                            newPassword,
                           );
 
                           if (mounted) {
@@ -234,12 +234,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 backgroundColor: Colors.red,
                               ),
                             );
-                            setState(() => _isLoading = false);
+                            setState(() => isLoading = false);
                           }
                         }
                       }
                     },
-              child: _isLoading
+              child: isLoading
                   ? const SizedBox(
                       height: 20,
                       width: 20,

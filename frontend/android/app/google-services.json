@@ -1,26 +1,51 @@
 {
   "project_info": {
-    "project_number": "756565377270",
-    "project_id": "myroute-ap",
-    "storage_bucket": "myroute-ap.firebasestorage.app"
+    "project_number": "663683728761",
+    "project_id": "rpilocot",
+    "storage_bucket": "rpilocot.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:756565377270:android:69557c05e2514a798e6cd7",
+        "mobilesdk_app_id": "1:663683728761:android:8286aad8c28142c247dba8",
         "android_client_info": {
           "package_name": "com.example.frontend"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "663683728761-0q9gq6jk5g8u028bjuf02qvso1jprjmm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.frontend",
+            "certificate_hash": "904f2ffcb0717c20cce003892e45e602f403e3ce"
+          }
+        },
+        {
+          "client_id": "663683728761-05r4rdikq5prc76i6opk5hsq91q63kvq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyDBXE-21I83kqmne8aGH5ncehNy0nIVeTQ"
+          "current_key": "AIzaSyDp7Q8BD53K6mCQageYWhKwM6Rn783Iwko"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "663683728761-05r4rdikq5prc76i6opk5hsq91q63kvq.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "663683728761-tlcd6u386sl8a16k2akt5lv5dloipa1e.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.frontend"
+              }
+            }
+          ]
         }
       }
     }

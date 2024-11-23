@@ -1,3 +1,18 @@
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        // Puedes agregar aquí dependencias adicionales del buildscript si es necesario
+    }
+}
+
+plugins {
+    // Añadir el plugin de Google Services con `apply false`
+    id 'com.google.gms.google-services' version '4.4.2' apply false
+}
+
 allprojects {
     repositories {
         google()

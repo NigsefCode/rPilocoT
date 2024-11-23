@@ -216,7 +216,7 @@ class _RoutesScreenState extends State<RoutesScreen> {
       _routeService = RouteService(token: token);
     } catch (e) {
       print('Error inicializando servicios: $e');
-      throw e;
+      rethrow;
     }
   }
 
