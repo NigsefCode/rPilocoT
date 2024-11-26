@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'home_screen.dart';
-import 'routes/routes_screen.dart';
 import 'settings_screen.dart';
+import 'destination_screen.dart';
 import '../services/auth_service.dart';
 import '../models/user.dart';
 
@@ -17,9 +17,10 @@ class _MainScreenState extends State<MainScreen> {
   final AuthService _authService = AuthService();
   User? _user;
 
-  static final List<Widget> _widgetOptions = <Widget>[
+  // Inicializar _widgetOptions directamente en lugar de usar late
+  final List<Widget> _widgetOptions = [
     const HomeScreen(),
-    const RoutesScreen(),
+    const DestinationScreen(),
     SettingsScreen(),
   ];
 
@@ -46,18 +47,26 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       body: Stack(
         children: [
-          _widgetOptions.elementAt(_selectedIndex),
+          // Contenido principal
+          IndexedStack(
+            index: _selectedIndex,
+            children: _widgetOptions,
+          ),
+
+          // Barra de navegación
           Positioned(
             left: 0,
             right: 0,
             bottom: 0,
             child: Container(
-              margin: const EdgeInsets.all(20),
+              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
+                color: theme.colorScheme.surface,
                 borderRadius: BorderRadius.circular(25),
                 boxShadow: [
                   BoxShadow(
@@ -70,34 +79,55 @@ class _MainScreenState extends State<MainScreen> {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(25),
-                child: BottomNavigationBar(
-                  items: const <BottomNavigationBarItem>[
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.home_rounded),
-                      label: 'Inicio',
-                    ),
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.map_rounded),
-                      label: 'Rutas',
-                    ),
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.settings_rounded),
-                      label: 'Ajustes',
-                    ),
-                  ],
-                  currentIndex: _selectedIndex,
-                  selectedItemColor: Theme.of(context).colorScheme.primary,
-                  unselectedItemColor: Colors.grey,
-                  showUnselectedLabels: true,
+                child: NavigationBar(
+                  selectedIndex: _selectedIndex,
+                  onDestinationSelected: _onItemTapped,
                   backgroundColor: Colors.transparent,
                   elevation: 0,
-                  onTap: _onItemTapped,
+                  height: 65,
+                  labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+                  destinations: [
+                    _buildNavDestination(
+                      icon: Icons.home_rounded,
+                      label: 'Inicio',
+                      index: 0,
+                    ),
+                    _buildNavDestination(
+                      icon: Icons.map_rounded,
+                      label: 'Rutas',
+                      index: 1,
+                    ),
+                    _buildNavDestination(
+                      icon: Icons.settings_rounded,
+                      label: 'Ajustes',
+                      index: 2,
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  NavigationDestination _buildNavDestination({
+    required IconData icon,
+    required String label,
+    required int index,
+  }) {
+    final theme = Theme.of(context);
+    final isSelected = _selectedIndex == index;
+
+    return NavigationDestination(
+      icon: Icon(
+        icon,
+        color: isSelected
+            ? theme.colorScheme.primary
+            : theme.colorScheme.onSurface.withOpacity(0.6),
+      ),
+      label: label,
     );
   }
 }

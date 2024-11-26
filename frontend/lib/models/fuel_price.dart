@@ -1,10 +1,12 @@
 // lib/models/fuel_price.dart
 class FuelPrice {
+  final String id;
   final String fuelType;
   final double price;
   final DateTime updatedAt;
 
   FuelPrice({
+    required this.id,
     required this.fuelType,
     required this.price,
     required this.updatedAt,
@@ -12,19 +14,10 @@ class FuelPrice {
 
   factory FuelPrice.fromJson(Map<String, dynamic> json) {
     return FuelPrice(
+      id: json['_id'],
       fuelType: json['fuelType'],
-      price: json['price']?.toDouble() ?? 0.0,
-      updatedAt: json['updatedAt'] != null
-          ? DateTime.parse(json['updatedAt'])
-          : DateTime.now(),
+      price: json['price'].toDouble(),
+      updatedAt: DateTime.parse(json['updatedAt']),
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'fuelType': fuelType,
-      'price': price,
-      'updatedAt': updatedAt.toIso8601String(),
-    };
   }
 }

@@ -5,18 +5,23 @@ const routeController = require('../controllers/routeController');
 const fuelPriceController = require('../controllers/fuelPriceController');
 const { protect, isAdmin } = require('../middleware/authMiddleware');
 
-// Rutas públicas (sin autenticación)
+// Rutas públicas
 router.get('/fuel-prices', fuelPriceController.getCurrentPrices);
+router.get('/destinations', routeController.getAvailableDestinations);
 
-// Aplicar middleware de autenticación al resto de rutas
+// Rutas protegidas
 router.use(protect);
-
-// Rutas protegidas (requieren autenticación)
 router.post('/calculate', routeController.calculateRoute);
 router.get('/history', routeController.getRouteHistory);
 router.get('/:id', routeController.getRouteById);
+router.put('/:id/cancel', routeController.cancelRoute);
+router.put('/:id/complete', routeController.completeRoute);
+router.get('/stats/user', routeController.getUserRouteStats);
 
-// Rutas que requieren ser admin
-router.put('/fuel-prices', isAdmin, fuelPriceController.updateFuelPrice);
+// Rutas admin
+router.use(isAdmin);
+router.put('/fuel-prices', fuelPriceController.updateFuelPrice);
+router.get('/stats/global', routeController.getGlobalRouteStats);
+router.get('/active-routes', routeController.getActiveRoutes);
 
 module.exports = router;

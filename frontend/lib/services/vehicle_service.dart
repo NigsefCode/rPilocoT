@@ -16,6 +16,39 @@ class VehicleService {
     };
   }
 
+  // Obtener vehículo por ID
+  Future<Vehicle> getVehicleById(String id) async {
+    try {
+      final headers = await _getAuthHeaders();
+      final response = await http.get(
+        Uri.parse('$baseUrl/$id'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        return Vehicle.fromJson(json.decode(response.body));
+      }
+      throw Exception('Failed to load vehicle');
+    } catch (e) {
+      print('Error getting vehicle: $e');
+      rethrow;
+    }
+  }
+
+  // Obtener vehículo activo
+  Future<Vehicle?> getActiveVehicle() async {
+    try {
+      final vehicles = await getUserVehicles();
+      if (vehicles.isEmpty) return null;
+      // Por ahora retornamos el primer vehículo
+      // Posteriormente podrías implementar una lógica para marcar un vehículo como activo
+      return vehicles.first;
+    } catch (e) {
+      print('Error getting active vehicle: $e');
+      return null;
+    }
+  }
+
   Future<List<Vehicle>> getUserVehicles() async {
     try {
       final headers = await _getAuthHeaders();

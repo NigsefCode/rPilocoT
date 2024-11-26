@@ -4,6 +4,7 @@ import 'screens/login_screen.dart';
 import 'screens/register_screen.dart';
 import 'screens/main_screen.dart';
 import 'screens/vehicle_questionnaire_screen.dart';
+import 'screens/route_details_screen.dart';
 import 'theme/theme.dart';
 import 'firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -33,7 +34,9 @@ Future<void> _initializeFirebaseSafely() async {
     );
     print('Firebase inicializado correctamente.');
   } catch (e) {
-    if (e.toString().contains('A Firebase App named "[DEFAULT]" already exists')) {
+    if (e
+        .toString()
+        .contains('A Firebase App named "[DEFAULT]" already exists')) {
       print('Firebase ya estÃ¡ inicializado.');
     } else {
       print('Error al inicializar Firebase: $e');
@@ -54,13 +57,31 @@ class MyApp extends StatelessWidget {
           return MaterialApp(
             title: 'rPilocoT',
             debugShowCheckedModeBanner: false,
-            theme: themeProvider.isDarkMode ? AppTheme.darkTheme : AppTheme.lightTheme,
+            theme: themeProvider.isDarkMode
+                ? AppTheme.darkTheme
+                : AppTheme.lightTheme,
             initialRoute: '/login',
             routes: {
               '/login': (context) => const LoginScreen(),
               '/register': (context) => const RegisterScreen(),
               '/main': (context) => const MainScreen(),
-              '/vehicle-questionnaire': (context) => const VehicleQuestionnaireScreen(),
+              '/vehicle-questionnaire': (context) =>
+                  const VehicleQuestionnaireScreen(),
+            },
+            // Agregar manejo de rutas con parámetros
+            onGenerateRoute: (settings) {
+              if (settings.name == '/route-details') {
+                final args = settings.arguments as Map<String, dynamic>;
+                return MaterialPageRoute(
+                  builder: (context) => RouteDetailsScreen(
+                    destination: args['destination'],
+                    routeType: args['routeType'],
+                    origin: args['origin'],
+                    vehicleId: args['vehicleId'],
+                  ),
+                );
+              }
+              return null;
             },
           );
         },
