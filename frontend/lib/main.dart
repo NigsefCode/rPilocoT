@@ -1,11 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'screens/login_screen.dart';
 import 'screens/register_screen.dart';
 import 'screens/main_screen.dart';
 import 'screens/vehicle_questionnaire_screen.dart';
-import 'theme/theme.dart'; // Importa el archivo de tema
+import 'theme/theme.dart';
 import 'firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
+
+class ThemeProvider extends ChangeNotifier {
+  bool _isDarkMode = true;
+
+  bool get isDarkMode => _isDarkMode;
+
+  void toggleTheme() {
+    _isDarkMode = !_isDarkMode;
+    notifyListeners();
+  }
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,17 +27,16 @@ void main() async {
 
 Future<void> _initializeFirebaseSafely() async {
   try {
-    print('Iniciando Firebase...'); // Log para verificar que se inicia la inicialización
+    print('Iniciando Firebase...');
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
-    print('Firebase inicializado correctamente.'); // Log para confirmar la inicialización exitosa
+    print('Firebase inicializado correctamente.');
   } catch (e) {
-    // Si ya existe una instancia, capturamos el error y lo ignoramos
     if (e.toString().contains('A Firebase App named "[DEFAULT]" already exists')) {
-      print('Firebase ya está inicializado, no se requiere inicializar nuevamente.');
+      print('Firebase ya estÃ¡ inicializado.');
     } else {
-      print('Error al inicializar Firebase: $e'); // Log de error para cualquier otro problema
+      print('Error al inicializar Firebase: $e');
       rethrow;
     }
   }
@@ -36,29 +47,24 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('Construyendo MyApp widget...'); // Log para confirmar que MyApp se está construyendo
-    return MaterialApp(
-      title: 'rPilocoT',
-      theme: AppTheme.darkTheme,
-      initialRoute: '/login',
-      routes: {
-        '/login': (context) {
-          print('Navegando a la pantalla de login...'); // Log para verificar la navegación
-          return const LoginScreen();
+    return ChangeNotifierProvider(
+      create: (_) => ThemeProvider(),
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, _) {
+          return MaterialApp(
+            title: 'rPilocoT',
+            debugShowCheckedModeBanner: false,
+            theme: themeProvider.isDarkMode ? AppTheme.darkTheme : AppTheme.lightTheme,
+            initialRoute: '/login',
+            routes: {
+              '/login': (context) => const LoginScreen(),
+              '/register': (context) => const RegisterScreen(),
+              '/main': (context) => const MainScreen(),
+              '/vehicle-questionnaire': (context) => const VehicleQuestionnaireScreen(),
+            },
+          );
         },
-        '/register': (context) {
-          print('Navegando a la pantalla de registro...'); // Log para verificar la navegación
-          return const RegisterScreen();
-        },
-        '/main': (context) {
-          print('Navegando a la pantalla principal...'); // Log para verificar la navegación
-          return const MainScreen();
-        },
-        '/vehicle-questionnaire': (context) {
-          print('Navegando a la pantalla del cuestionario del vehículo...'); // Log para verificar la navegación
-          return const VehicleQuestionnaireScreen();
-        },
-      },
+      ),
     );
   }
 }
