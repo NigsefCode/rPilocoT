@@ -37,3 +37,6 @@ flutter:
     assets:
         - assets/
         - assets/images/
+        - assets/images/constitucion.jpg
+        - assets/images/iloca.jpg
+        - assets/images/pichilemu.jpg

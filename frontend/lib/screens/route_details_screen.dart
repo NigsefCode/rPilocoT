@@ -22,8 +22,7 @@ class RouteDetailsScreen extends StatefulWidget {
   State<RouteDetailsScreen> createState() => _RouteDetailsScreenState();
 }
 
-class _RouteDetailsScreenState extends State<RouteDetailsScreen>
-    with WidgetsBindingObserver {
+class _RouteDetailsScreenState extends State<RouteDetailsScreen> {
   final RouteService _routeService = RouteService();
   RouteModel? _route;
   Set<Marker> _markers = {};
@@ -31,36 +30,17 @@ class _RouteDetailsScreenState extends State<RouteDetailsScreen>
   bool _isLoading = true;
   String? _errorMessage;
   GoogleMapController? _mapController;
-  bool _isMapReady = false;
-  bool _isDisposed = false; // Para verificar si el widget está desmontado.
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
     _calculateRoute();
   }
 
   @override
   void dispose() {
-    _isDisposed = true; // Marca el widget como desmontado.
-    WidgetsBinding.instance.removeObserver(this);
-    _disposeMapController();
+    _mapController?.dispose();
     super.dispose();
-  }
-
-  void _disposeMapController() {
-    if (_mapController != null) {
-      _mapController!.dispose();
-      _mapController = null;
-    }
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused) {
-      print("App en pausa, controlador no dispuesto.");
-    }
   }
 
   Future<void> _calculateRoute() async {
@@ -113,7 +93,7 @@ class _RouteDetailsScreenState extends State<RouteDetailsScreen>
         ),
       };
 
-      if (mounted && !_isDisposed) {
+      if (mounted) {
         setState(() {
           _route = calculatedRoute;
           _markers = markers;
@@ -121,12 +101,10 @@ class _RouteDetailsScreenState extends State<RouteDetailsScreen>
           _isLoading = false;
         });
 
-        if (_isMapReady) {
-          _fitMapToRoute(polylinePoints);
-        }
+        _fitMapToRoute(polylinePoints);
       }
     } catch (e) {
-      if (mounted && !_isDisposed) {
+      if (mounted) {
         setState(() {
           _errorMessage = 'Error al calcular la ruta: $e';
           _isLoading = false;
@@ -136,7 +114,7 @@ class _RouteDetailsScreenState extends State<RouteDetailsScreen>
   }
 
   void _fitMapToRoute(List<LatLng> points) {
-    if (points.isEmpty || _mapController == null || _isDisposed) return;
+    if (points.isEmpty || _mapController == null) return;
 
     try {
       LatLngBounds bounds = LatLngBounds(
@@ -176,19 +154,15 @@ class _RouteDetailsScreenState extends State<RouteDetailsScreen>
 
     return WillPopScope(
       onWillPop: () async {
-        _disposeMapController();
+        // Simplemente permitir el pop sin disponer el mapa
         return true;
       },
       child: Scaffold(
+        backgroundColor: theme.scaffoldBackgroundColor,
         appBar: AppBar(
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-              _disposeMapController();
-              if (mounted) {
-                Navigator.of(context).pop();
-              }
-            },
+            onPressed: () => Navigator.of(context).pop(),
           ),
           title: Text('Ruta a ${widget.destination['name']}'),
           centerTitle: true,
@@ -225,17 +199,8 @@ class _RouteDetailsScreenState extends State<RouteDetailsScreen>
                             target: widget.origin,
                             zoom: 12,
                           ),
-                          onMapCreated: (GoogleMapController controller) {
-                            if (!_isDisposed) {
-                              setState(() {
-                                _mapController = controller;
-                                _isMapReady = true;
-                                if (_route != null) {
-                                  _fitMapToRoute(_polylines.first.points);
-                                }
-                              });
-                            }
-                          },
+                          onMapCreated: (controller) =>
+                              _mapController = controller,
                           markers: _markers,
                           polylines: _polylines,
                           myLocationEnabled: true,
