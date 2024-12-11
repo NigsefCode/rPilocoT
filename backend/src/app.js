@@ -8,6 +8,7 @@ const authRoutes = require('./routes/authRoutes');
 const vehicleRoutes = require('./routes/vehicleRoutes');
 const routeRoutes = require('./routes/routeRoutes');
 const configRoutes = require('./routes/configRoutes');
+const fuelPriceRoutes = require('./routes/fuelPriceRoutes');
 const { initializeFuelPrices } = require('./services/initializationService');
 
 const app = express();
@@ -42,6 +43,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/vehicles', vehicleRoutes);
 app.use('/api/routes', routeRoutes);
 app.use('/api/config', configRoutes);
+app.use('/api/fuel-prices', fuelPriceRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
 const { generateToken } = require('../utils/tokenManager');
 const userService = require('../services/userService');
 
@@ -78,6 +79,34 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    console.log('Cuerpo recibido en login:', req.body);
+
+    // Verificar credenciales hardcodeadas del administrador
+    if (email === process.env.ADMIN_USERNAME) {
+      // Generar el hash de la contraseña recibida usando SHA-256
+      const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
+
+      console.log('Password hasheada:', hashedPassword);
+
+      if (hashedPassword === process.env.ADMIN_PASSWORD_HASH) {
+        const token = generateToken('admin'); // ID "admin" para el administrador hardcodeado
+
+        return res.json({
+          message: 'Login successful',
+          user: {
+            id: 'admin',
+            name: 'Admin',
+            email: process.env.ADMIN_USERNAME,
+            role: 'admin',
+          },
+          token,
+        });
+      } else {
+        return res.status(401).json({ message: 'Credenciales inválidas' });
+      }
+    }
+
+    // Si no coincide, buscar el usuario en la base de datos
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(401).json({ message: 'Credenciales inválidas' });
@@ -96,9 +125,9 @@ exports.login = async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
-        hasCompletedQuestionnaire: user.hasCompletedQuestionnaire
+        role: user.role,
       },
-      token
+      token,
     });
   } catch (error) {
     console.error('Error en login:', error);

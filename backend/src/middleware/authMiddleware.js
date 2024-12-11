@@ -12,8 +12,19 @@ const protect = async (req, res, next) => {
     }
 
     const decoded = verifyToken(token);
-    
-    // Obtener el usuario completo de la base de datos para tener acceso al rol
+
+    // Si el token pertenece al administrador hardcodeado
+    if (decoded.id === 'admin') {
+      req.user = {
+        id: 'admin',
+        name: 'Admin',
+        email: process.env.ADMIN_USERNAME,
+        role: 'admin',
+      };
+      return next();
+    }
+
+    // Buscar usuario en la base de datos
     const user = await User.findById(decoded.id);
     if (!user) {
       return res.status(401).json({ message: 'Usuario no encontrado' });
