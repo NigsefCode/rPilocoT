@@ -8,6 +8,7 @@ import 'screens/route_details_screen.dart';
 import 'theme/theme.dart';
 import 'firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 class ThemeProvider extends ChangeNotifier {
   bool _isDarkMode = true;
@@ -20,9 +21,26 @@ class ThemeProvider extends ChangeNotifier {
   }
 }
 
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  // Maneja los mensajes en segundo plano.
+  print('Mensaje en segundo plano recibido: ${message.messageId}');
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await _initializeFirebaseSafely();
+
+  // Configuración del manejador de mensajes en segundo plano.
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+  // Obtener e imprimir el token FCM
+  try {
+    String? token = await FirebaseMessaging.instance.getToken();
+    print('Token FCM desde main: $token');
+  } catch (e) {
+    print('Error al obtener el token FCM: $e');
+  }
+
   runApp(const MyApp());
 }
 
@@ -33,11 +51,28 @@ Future<void> _initializeFirebaseSafely() async {
       options: DefaultFirebaseOptions.currentPlatform,
     );
     print('Firebase inicializado correctamente.');
+
+    // Configurar Firebase Messaging
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+    // Solicitar permisos para notificaciones
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
+    print('Permisos de notificación: ${settings.authorizationStatus}');
+
+    // Configurando listeners para notificaciones en primer plano
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print('Notificación recibida en primer plano: ${message.notification?.title}');
+    });
   } catch (e) {
     if (e
         .toString()
         .contains('A Firebase App named "[DEFAULT]" already exists')) {
-      print('Firebase ya estÃ¡ inicializado.');
+      print('Firebase ya está inicializado.');
     } else {
       print('Error al inicializar Firebase: $e');
       rethrow;
